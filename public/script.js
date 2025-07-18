@@ -1,3 +1,4 @@
+// Fetch available currencies and populate the dropdowns and table
 async function fetchCurrencies() {
   const res = await fetch('/currencies');
   const data = await res.json();
@@ -31,6 +32,7 @@ async function fetchCurrencies() {
   to.value = 'EUR';
 }
 
+// Convert the amount based on selected currencies
 async function convert() {
   const amt = document.getElementById('amount').value;
   const from = document.getElementById('from').value;
@@ -39,11 +41,11 @@ async function convert() {
   const res = await fetch(`/convert?from=${from}&to=${to}&amount=${amt}`);
   const data = await res.json();
 
-  document.getElementById('result').innerHTML = 
+  document.getElementById('result').innerHTML =
     `${amt} ${from} = <strong>${data.converted.toFixed(2)} ${to}</strong>`;
 }
 
-// Switch button functionality
+// Switch currency selection
 function switchCurrencies() {
   const from = document.getElementById('from');
   const to = document.getElementById('to');
@@ -52,5 +54,5 @@ function switchCurrencies() {
   to.value = temp;
 }
 
-// Call this on page load
+// Initialize the page
 fetchCurrencies();
