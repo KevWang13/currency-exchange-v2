@@ -1,0 +1,32 @@
+body {
+    font-family: sans-serif;
+    padding: 20px;
+    background-color: #f7f7f7;
+  }
+  h1, h2 {
+    color: #333;
+  }
+  #converter {
+    margin-bottom: 20px;
+    padding: 10px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #ccc;
+    max-width: 400px;
+  }
+  input, select, button {
+    margin: 5px 0;
+    padding: 6px;
+    width: 100%;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    background: white;
+  }
+  th, td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+  
