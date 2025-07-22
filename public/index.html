@@ -37,6 +37,50 @@
     <tbody></tbody>
   </table>
 
+  <!-- Developer Test Panel -->
+  <h2>🧪 Test Currency API</h2>
+  <details>
+    <summary style="cursor: pointer;">Expand Test Panel</summary>
+    <div style="margin-top: 10px;">
+      <section>
+        <h3>GET /currencies</h3>
+        <label>Filter ISO:</label><input id="get-iso" /><br/>
+        <button onclick="getCurrencies()">Fetch</button>
+      </section>
+
+      <section>
+        <h3>POST /currencies</h3>
+        <label>ISO:</label><input id="post-iso" /><br/>
+        <label>Name:</label><input id="post-name" /><br/>
+        <label>Symbol:</label><input id="post-symbol" /><br/>
+        <label>Country:</label><input id="post-country" /><br/>
+        <label>Flag URL:</label><input id="post-flag" /><br/>
+        <button onclick="addCurrency()">Add</button>
+      </section>
+
+      <section>
+        <h3>GET /currencies/delete</h3>
+        <label>ISO to Disable:</label><input id="del-iso" /><br/>
+        <button onclick="disableCurrency()">Disable</button>
+      </section>
+
+      <section>
+        <h3>POST /currencies/update</h3>
+        <label>ISO:</label><input id="upd-iso" /><br/>
+        <label>Name:</label><input id="upd-name" /><br/>
+        <label>Symbol:</label><input id="upd-symbol" /><br/>
+        <label>Country:</label><input id="upd-country" /><br/>
+        <label>Flag URL:</label><input id="upd-flag" /><br/>
+        <label>is_active (1 or 0):</label><input id="upd-active" /><br/>
+        <button onclick="updateCurrency()">Update</button>
+      </section>
+
+      <h3>🔽 Server Response</h3>
+      <pre id="response" style="background:#f4f4f4; padding:10px; max-height:200px; overflow:auto;"></pre>
+    </div>
+  </details>
+
   <script src="script.js"></script>
+  <script src="test.js"></script>
 </body>
 </html>
