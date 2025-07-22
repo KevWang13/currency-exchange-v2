@@ -1,12 +1,34 @@
 // app.js
-const http = require('http');
-const app = require('./currencyApi');
+const express = require('express');
+const path    = require('path');
 
-const server = http.createServer((req, res) => {
-  res.end('Hello from Node.js!');
-});
+// config
+const db = require('./config/db');
+db.query('SELECT 1')
+  .then(() => console.log('✅ Connected to MySQL database'))
+  .catch(err => console.error('❌ MySQL connection error:', err));
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// middleware (if used globally)
+const authMiddleware = require('./middleware/auth');
+
+const users      = require('./routes/users');
+const watchlist  = require('./routes/watchlist');
+const currencies = require('./routes/currencies');
+const rates      = require('./routes/rates');
+const convert    = require('./routes/convert');
+const reserve    = require('./routes/reserve');
+
+const app = express();
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/users', users);
+app.use('/watchlist', watchlist);
+app.use('/currencies', currencies);
+app.use('/rates', rates);
+app.use('/convert', convert);
+app.use('/rates/reserve', reserve);
+
+app.listen(process.env.PORT||3000, ()=>
+  console.log('Listening on port', process.env.PORT||3000)
+);

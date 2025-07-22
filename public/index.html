@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div id="welcome-msg" style="margin-bottom: 20px; font-weight: bold;"></div>
   <h1>💱 Currency Converter</h1>
 
   <div id="converter">
@@ -17,7 +18,6 @@
     <button type="button" onclick="switchCurrencies()" title="Switch currencies">⇅</button>
     <label>To:</label>
     <select id="to"></select>
-
     <button onclick="convert()">Convert</button>
 
     <div id="result"></div>
@@ -47,7 +47,26 @@
         <label>Filter ISO:</label><input id="get-iso" /><br/>
         <button onclick="getCurrencies()">Fetch</button>
       </section>
-
+      <section>
+        <h3>GET /users</h3>
+        <button onclick="getUsers()">Fetch Users</button>
+      </section>
+      <section>
+        <h3>POST /users/register</h3>
+        <button onclick="register()">Register (demo)</button>
+        <button onclick="login()">Login (demo)</button>
+        <button onclick="adminLogin()">Admin Login (demo)</button> <!-- New button -->
+      </section>
+      
+      <section>
+        <h3>GET /watchlist</h3>
+        <button onclick="getWatchlist()">My Watchlist</button>
+      </section>
+      <section>
+        <h3>POST /rates/reserve</h3>
+        <button onclick="reserveRate()">Reserve Rate (demo)</button>
+      </section>
+      
       <section>
         <h3>POST /currencies</h3>
         <label>ISO:</label><input id="post-iso" /><br/>
@@ -66,14 +85,27 @@
 
       <section>
         <h3>POST /currencies/update</h3>
-        <label>ISO:</label><input id="upd-iso" /><br/>
-        <label>Name:</label><input id="upd-name" /><br/>
-        <label>Symbol:</label><input id="upd-symbol" /><br/>
-        <label>Country:</label><input id="upd-country" /><br/>
-        <label>Flag URL:</label><input id="upd-flag" /><br/>
-        <label>is_active (1 or 0):</label><input id="upd-active" /><br/>
+        <label>ISO:</label>
+        <input id="upd-iso" onblur="fetchCurrency()" placeholder="Enter ISO code" /><br/>
+      
+        <label>Name:</label>
+        <input id="upd-name" disabled /><br/>
+      
+        <label>Symbol:</label>
+        <input id="upd-symbol" disabled /><br/>
+      
+        <label>Country:</label>
+        <input id="upd-country" disabled /><br/>
+      
+        <label>Flag URL:</label>
+        <input id="upd-flag" disabled /><br/>
+      
+        <label>is_active (1 or 0):</label>
+        <input id="upd-active" disabled /><br/>
+      
         <button onclick="updateCurrency()">Update</button>
       </section>
+      
 
       <h3>🔽 Server Response</h3>
       <pre id="response" style="background:#f4f4f4; padding:10px; max-height:200px; overflow:auto;"></pre>
