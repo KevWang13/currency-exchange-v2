@@ -1,0 +1,79 @@
+openapi: 3.0.0
+info:
+  title: Currency Exchange API
+  version: 1.0.0
+
+paths:
+  /users:
+    get:
+      summary: Get all users
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+  /watchlist:
+    get:
+      summary: Get all watchlist entries
+      responses:
+        '200':
+          description: A list of watchlist entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Watchlist'
+
+  /currency:
+    get:
+      summary: Get all currencies and exchange rates
+      responses:
+        '200':
+          description: A list of currencies with exchange rates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Currency'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+
+    Watchlist:
+      type: object
+      properties:
+        id:
+          type: integer
+        pair:
+          type: string
+          example: "USD/EUR"
+        targetPrice:
+          type: number
+          format: float
+        alertTriggered:
+          type: boolean
+
+    Currency:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        exchangeRate:
+          type: number
+          format: float
