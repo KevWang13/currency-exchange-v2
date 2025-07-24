@@ -197,42 +197,45 @@ window.addEventListener('DOMContentLoaded', () => {
   // GET /currencies/delete?iso=XXX (admin auth required)
   async function disableCurrency() {
     try {
-      const token = getToken();
-      if (!token) throw new Error('No token found. Please login first.');
+        const token = getToken();
+        if (!token) throw new Error('No token found. Please login first.');
 
-      const iso = document.getElementById('del-iso').value.trim().toUpperCase();
-      if (!iso) throw new Error('Please provide ISO code to disable');
+        const iso = document.getElementById('del-iso').value.trim().toUpperCase();
+        if (!iso) throw new Error('Please provide ISO code to disable');
 
-      const url = `/currencies/${iso}`;
-      const res = await fetch(url, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      });
+        const body = { is_active: 0 }; // Set is_active to 0
+        const url = `/currencies/${iso}`;
+        const res = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(body)
+        });
 
-      if (!res.ok) {
+        if (!res.ok) {
+            const contentType = res.headers.get('Content-Type');
+            const errorText = contentType && contentType.includes('application/json')
+                ? (await res.json()).error || 'Unknown error'
+                : await res.text();
+            throw new Error(`Failed to disable currency: ${errorText}`);
+        }
+
         const contentType = res.headers.get('Content-Type');
-        const errorText = contentType && contentType.includes('application/json')
-          ? (await res.json()).error || 'Unknown error'
-          : await res.text();
-        throw new Error(`Failed to disable currency: ${errorText}`);
-      }
+        const responseText = contentType && contentType.includes('application/json')
+            ? await res.json()
+            : { message: await res.text() };
 
-      const contentType = res.headers.get('Content-Type');
-      const responseText = contentType && contentType.includes('application/json')
-        ? await res.json()
-        : { message: await res.text() };
-
-      showResponse(responseText.message || 'Currency disabled successfully');
+        showResponse(responseText.message || 'Currency disabled successfully');
     } catch (err) {
-      showResponse({ error: err.message });
+        showResponse({ error: err.message });
     }
-  }
+}
   
   // PATCH /currencies/:iso (admin auth required)
   async function updateCurrency() {
     try {
-      const token = getToken();
-      if (!token) throw new Error('No token found. Please login first.');
   
       const iso = document.getElementById('upd-iso').value.trim().toUpperCase();
       if (!iso) throw new Error('Please provide ISO code to update');
@@ -256,6 +259,7 @@ window.addEventListener('DOMContentLoaded', () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
+
         body: JSON.stringify(body)
       });
       if (!res.ok) throw new Error(await res.text());
