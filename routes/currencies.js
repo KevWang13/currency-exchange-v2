@@ -6,6 +6,7 @@ const { verifyToken, requireRole } = require('../middleware/auth')
 // GET /currencies
 router.get('/', async (req, res) => {
   try {
+    
     const { iso } = req.query
 
     let sql = `
@@ -47,6 +48,7 @@ router.get('/:iso', async (req, res) => {
 // POST /currencies
 router.post('/', verifyToken, requireRole('admin'), async (req, res) => {
   const { iso_code, name, symbol, country, flag_url } = req.body
+
   try {
     await db.query(
       'INSERT INTO currencies (iso_code, name, symbol, country, flag_url) VALUES (?, ?, ?, ?, ?)',
@@ -101,6 +103,7 @@ router.patch('/:iso', verifyToken, requireRole('admin'), async (req, res) => {
     res.status(500).json({ error: 'Failed to update currency' })
   }
 })
+
 
 // DELETE /currencies/:iso
 router.delete('/:iso', verifyToken, requireRole('admin'), async (req, res) => {

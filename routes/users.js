@@ -70,6 +70,38 @@ router.get('/', async (req, res) => {
       res.status(500).json({ error: 'Database error' });
     }
   });
-  
+
+// GET (Search Users)
+// Search Users
+router.get('/search', async (req, res) => {
+  try {
+    const { id, username, email } = req.query;
+    let query = 'SELECT id, username, email FROM users WHERE 1=1';
+    const params = [];
+
+    if (id) {
+      query += ' AND id = ?';
+      params.push(id);
+    }
+    if (username) {
+      query += ' AND username LIKE ?';
+      params.push(`%${username}%`);
+    }
+    if (email) {
+      query += ' AND email LIKE ?';
+      params.push(`%${email}%`);
+    }
+
+    const [rows] = await pool.query(query, params);
+    if (!rows.length) {
+      return res.status(404).json({ message: 'No users found' });
+    }
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
 
 module.exports = router;
