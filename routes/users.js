@@ -18,6 +18,99 @@ router.post('/register', async (req, res) => {
   res.status(201).send('User created');
 });
 
+//user post
+// Registration
+router.post('/register', async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+    
+    // Basic validation
+    if (!username || !email || !password) {
+      return res.status(400).send('All fields are required');
+    }
+    
+    const hash = await bcrypt.hash(password, 10);
+    await pool.query(
+      'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
+      [username, email, hash]
+    );
+    res.status(201).send('User created');
+  } catch (err) {
+    console.error(err);
+    if (err.code === 'ER_DUP_ENTRY') {
+      return res.status(400).send('Username or email already exists');
+    }
+    res.status(500).send('Server error');
+  }
+});
+
+// Create Post (new functionality)
+router.post('/posts', verifyToken, async (req, res) => {
+  try {
+    const { title, content } = req.body;
+    const userId = req.user.id;
+    
+    if (!title || !content) {
+      return res.status(400).send('Title and content are required');
+    }
+    
+    await pool.query(
+      'INSERT INTO posts (user_id, title, content) VALUES (?, ?, ?)',
+      [userId, title, content]
+    );
+    res.status(201).send('Post created');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+// Login
+router.post('/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    
+    if (!username || !password) {
+      return res.status(400).send('Username and password are required');
+    }
+    
+    const [[user]] = await pool.query(
+      'SELECT * FROM users WHERE username = ?', 
+      [username]
+    );
+    
+    if (!user) return res.status(401).send('Invalid credentials');
+    
+    const ok = await bcrypt.compare(password, user.password_hash);
+    if (!ok) return res.status(401).send('Invalid credentials');
+    
+    const token = jwt.sign(
+      { id: user.id, role: user.role }, 
+      SECRET, 
+      { expiresIn: '2h' }
+    );
+    
+    res.json({ token });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+// View Profile
+router.get('/profile', verifyToken, async (req, res) => {
+  try {
+    const [[user]] = await pool.query(
+      'SELECT id, username, email, role, created_at, updated_at FROM users WHERE id = ?',
+      [req.user.id]
+    );
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
 // Login
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
