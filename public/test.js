@@ -237,6 +237,36 @@ window.addEventListener('DOMContentLoaded', () => {
       showResponse({ error: err.message });
     }
   }
+
+// GET /search
+  async function searchUsers() {
+  const id = document.getElementById('search-id').value;
+  const username = document.getElementById('search-username').value;
+  const email = document.getElementById('search-email').value;
+
+  const params = new URLSearchParams();
+  if (id) params.append('id', id);
+  if (username) params.append('username', username);
+  if (email) params.append('email', email);
+
+  const url = `/users/search?${params.toString()}`; // 修正为 /users/search
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+    const data = await response.json();
+    document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+  } catch (error) {
+    document.getElementById('response').textContent = `Error: ${error.message}`;
+  }
+}
   
   // PATCH /currencies/:iso (admin auth required)
   async function updateCurrency() {
