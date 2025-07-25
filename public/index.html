@@ -1,30 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Currency Converter</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="https://play-lh.googleusercontent.com/N1x7T0MZHvbVk2Zabri4kkp90xFeCjwe47z6mjWezA4FYGhwzeJ5CsXfrHYyvfhjDeri" type="image/png" />
+  <!-- Add Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    input, button, select {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
 </head>
-<body>
-  <div id="welcome-msg" style="margin-bottom: 20px; font-weight: bold;"></div>
-  <h1>💱 Currency Converter</h1>
 
-  <div id="converter">
-    <label>Amount:</label>
-    <input type="number" id="amount" value="100" style="width: 90px;" />
+<body style="margin: 0; padding: 0; background-color: #f4f4f4;">
+  <div id="welcome-msg" style="margin-bottom: 20px; font-weight: bold; text-align: center;"></div>
+  <h1 style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+    💱 Currency Converter
+  </h1>
 
-    <label>From:</label>
-    <select id="from"></select>
-    <button type="button" onclick="switchCurrencies()" title="Switch currencies">⇅</button>
-    <label>To:</label>
-    <select id="to"></select>
-    <button onclick="convert()">Convert</button>
-
-    <div id="result"></div>
+  <!-- Centered Converter Block -->
+  <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+    <div id="converter"
+      style="background: #f9f9f9; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); width: 100%; max-width: 400px;">
+      <h2 style="margin-top: 0; color: #333;">Currency Converter</h2>
+      <div style="margin-bottom: 15px; margin-right: 18px;">
+        <label for="amount" style="font-weight: bold;">Amount:</label>
+        <input type="number" id="amount" value="100"
+          style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px;" />
+      </div>
+      <div style="margin-bottom: 15px;">
+        <label for="from" style="font-weight: bold;">From:</label>
+        <select id="from"
+          style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px;"></select>
+      </div>
+      <div style="margin-bottom: 15px;">
+        <label for="to" style="font-weight: bold;">To:</label>
+        <select id="to"
+          style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px;"></select>
+      </div>
+      <div style="text-align: center; margin-bottom: 15px;">
+        <button type="button" onclick="switchCurrencies()" title="Switch currencies"
+          style="background: #3c474d; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px; font-size: 20px">⇅</button>
+        <button onclick="convert()"
+          style="background: #f08900; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 20px">Convert</button>
+      </div>
+      <div id="result" style="text-align: center; font-weight: bold; color: #333;"></div>
+    </div>
   </div>
 
-  <h2>🌍 All Currencies</h2>
-  <table id="currency-table">
+  <!-- Table Below -->
+  <h2 style="text-align: center;">🌍 All Currencies</h2>
+  <table id="currency-table" style="margin: 0 auto; border-collapse: collapse; width: 90%; max-width: 800px;">
     <thead>
       <tr>
         <th>Flag</th>
@@ -45,7 +77,7 @@
     <div style="margin-top: 10px;">
       <section>
         <h3>GET /currencies</h3>
-        <label>Filter ISO:</label><input id="get-iso" /><br/>
+        <label>Filter ISO:</label><input id="get-iso" /><br />
         <button onclick="getCurrencies()">Fetch</button>
       </section>
       <section>
@@ -58,7 +90,7 @@
         <button onclick="login()">Login (demo)</button>
         <button onclick="adminLogin()">Admin Login (demo)</button> <!-- New button -->
       </section>
-      
+
       <section>
         <h3>GET /watchlist</h3>
         <button onclick="getWatchlist()">My Watchlist</button>
@@ -67,46 +99,46 @@
         <h3>POST /rates/reserve</h3>
         <button onclick="reserveRate()">Reserve Rate (demo)</button>
       </section>
-      
+
       <section>
         <h3>POST /currencies</h3>
-        <label>ISO:</label><input id="post-iso" /><br/>
-        <label>Name:</label><input id="post-name" /><br/>
-        <label>Symbol:</label><input id="post-symbol" /><br/>
-        <label>Country:</label><input id="post-country" /><br/>
-        <label>Flag URL:</label><input id="post-flag" /><br/>
+        <label>ISO:</label><input id="post-iso" /><br />
+        <label>Name:</label><input id="post-name" /><br />
+        <label>Symbol:</label><input id="post-symbol" /><br />
+        <label>Country:</label><input id="post-country" /><br />
+        <label>Flag URL:</label><input id="post-flag" /><br />
         <button onclick="addCurrency()">Add</button>
       </section>
 
       <section>
         <h3>GET /currencies/delete</h3>
-        <label>ISO to Disable:</label><input id="del-iso" /><br/>
+        <label>ISO to Disable:</label><input id="del-iso" /><br />
         <button onclick="disableCurrency()">Disable</button>
       </section>
 
       <section>
         <h3>POST /currencies/update</h3>
         <label>ISO:</label>
-        <input id="upd-iso" onblur="fetchCurrency()" placeholder="Enter ISO code" /><br/>
-      
+        <input id="upd-iso" onblur="fetchCurrency()" placeholder="Enter ISO code" /><br />
+
         <label>Name:</label>
-        <input id="upd-name" disabled /><br/>
-      
+        <input id="upd-name" disabled /><br />
+
         <label>Symbol:</label>
-        <input id="upd-symbol" disabled /><br/>
-      
+        <input id="upd-symbol" disabled /><br />
+
         <label>Country:</label>
-        <input id="upd-country" disabled /><br/>
-      
+        <input id="upd-country" disabled /><br />
+
         <label>Flag URL:</label>
-        <input id="upd-flag" disabled /><br/>
-      
+        <input id="upd-flag" disabled /><br />
+
         <label>is_active (1 or 0):</label>
-        <input id="upd-active" disabled /><br/>
-      
+        <input id="upd-active" disabled /><br />
+
         <button onclick="updateCurrency()">Update</button>
       </section>
-      
+
 
       <h3>🔽 Server Response</h3>
       <pre id="response" style="background:#f4f4f4; padding:10px; max-height:200px; overflow:auto;"></pre>
@@ -116,4 +148,5 @@
   <script src="script.js"></script>
   <script src="test.js"></script>
 </body>
+
 </html>
