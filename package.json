@@ -6,5 +6,24 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.2"
-  }
+  },
+  "name": "currency-exchange-v2",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000c\u0000u\u0000r\u0000r\u0000e\u0000n\u0000c\u0000y\u0000-\u0000e\u0000x\u0000c\u0000h\u0000a\u0000n\u0000g\u0000e\u0000-\u0000v\u00002\u0000\r\u0000 \u0000",
+  "main": "app.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KevWang13/currency-exchange-v2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KevWang13/currency-exchange-v2/issues"
+  },
+  "homepage": "https://github.com/KevWang13/currency-exchange-v2#readme"
 }

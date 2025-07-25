@@ -20,20 +20,6 @@ function showResponse(data) {
       showResponse(`Error: ${error.message}`);
     }
   }
-//   async function getUsers() {
-//     try {
-//       // If you add a GET /users route on backend, uncomment below:
-//       // const res = await fetch('/users');
-//       // if (!res.ok) throw new Error(await res.text());
-//       // const json = await res.json();
-  
-//       // Dummy fallback:
-//       const json = { message: 'GET /users not implemented on server' };
-//       showResponse(json);
-//     } catch (err) {
-//       showResponse({ error: err.message });
-//     }
-//   }
   
   // POST /users/register
   async function register() {
@@ -116,23 +102,6 @@ window.addEventListener('DOMContentLoaded', () => {
     showResponse('Logged in');
   }
   
-  
-//   async function login() {
-//     try {
-//       const res = await fetch('/users/login', {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ username: 'joe', password: 'pass' })
-//       });
-//       if (!res.ok) throw new Error(await res.text());
-//       const { token } = await res.json();
-//       localStorage.setItem('token', token);
-//       showResponse('Logged in successfully');
-//     } catch (err) {
-//       showResponse({ error: err.message });
-//     }
-//   }
-  
   // GET /watchlist (auth required)
   async function getWatchlist() {
     try {
@@ -165,8 +134,17 @@ window.addEventListener('DOMContentLoaded', () => {
         },
         body: JSON.stringify(body)
       });
-      if (!res.ok) throw new Error(await res.text());
+  
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText);
+      }
+  
       const json = await res.json();
+      if (!json.from_active || !json.to_active) {
+        throw new Error('One or both currencies are inactive.');
+      }
+  
       showResponse(json);
     } catch (err) {
       showResponse({ error: err.message });
@@ -219,23 +197,41 @@ window.addEventListener('DOMContentLoaded', () => {
   // GET /currencies/delete?iso=XXX (admin auth required)
   async function disableCurrency() {
     try {
-      const token = getToken();
-      if (!token) throw new Error('No token found. Please login first.');
-  
-      const iso = document.getElementById('del-iso').value.trim().toUpperCase();
-      if (!iso) throw new Error('Please provide ISO code to disable');
-  
-      const url = `/currencies/${iso}`;
-      const res = await fetch(url, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (!res.ok) throw new Error(await res.text());
-      const json = await res.json();
-      showResponse(json);
+        const token = getToken();
+        if (!token) throw new Error('No token found. Please login first.');
+
+        const iso = document.getElementById('del-iso').value.trim().toUpperCase();
+        if (!iso) throw new Error('Please provide ISO code to disable');
+
+        const body = { is_active: 0 }; // Set is_active to 0
+        const url = `/currencies/${iso}`;
+        const res = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(body)
+        });
+
+        if (!res.ok) {
+            const contentType = res.headers.get('Content-Type');
+            const errorText = contentType && contentType.includes('application/json')
+                ? (await res.json()).error || 'Unknown error'
+                : await res.text();
+            throw new Error(`Failed to disable currency: ${errorText}`);
+        }
+
+        const contentType = res.headers.get('Content-Type');
+        const responseText = contentType && contentType.includes('application/json')
+            ? await res.json()
+            : { message: await res.text() };
+
+        showResponse(responseText.message || 'Currency disabled successfully');
     } catch (err) {
-      showResponse({ error: err.message });
+        showResponse({ error: err.message });
     }
+    
   }
 
 // GET /search
@@ -271,8 +267,6 @@ window.addEventListener('DOMContentLoaded', () => {
   // PATCH /currencies/:iso (admin auth required)
   async function updateCurrency() {
     try {
-      const token = getToken();
-      if (!token) throw new Error('No token found. Please login first.');
   
       const iso = document.getElementById('upd-iso').value.trim().toUpperCase();
       if (!iso) throw new Error('Please provide ISO code to update');
@@ -296,6 +290,7 @@ window.addEventListener('DOMContentLoaded', () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
+
         body: JSON.stringify(body)
       });
       if (!res.ok) throw new Error(await res.text());
@@ -421,4 +416,20 @@ async function fetchCurrency() {
     from.value = 'USD';
     to.value = 'EUR';
   }
-  
+
+// DELETE /currencies/:iso (admin auth required)
+app.delete('/currencies/:iso', async (req, res) => {
+  const { iso } = req.params;
+  try {
+    const result = await db.query(
+      'UPDATE currencies SET is_active = 0 WHERE iso_code = $1 RETURNING *',
+      [iso]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Currency not found' });
+    }
+    res.json({ message: 'Currency disabled', currency: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
