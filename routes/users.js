@@ -71,7 +71,6 @@ router.get('/', async (req, res) => {
     }
   });
 
-
 // GET (Search Users)
 // Search Users
 router.get('/search', async (req, res) => {

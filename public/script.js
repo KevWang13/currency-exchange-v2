@@ -24,6 +24,7 @@ async function fetchCurrencies() {
       <td>${cur.name}</td>
       <td>${cur.symbol || ''}</td>
       <td>${cur.country || ''}</td>
+      <td>${Number(cur.rate_to_usd).toFixed(2)}</td>
     `;
     tbody.appendChild(tr);
   });
